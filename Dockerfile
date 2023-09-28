@@ -1,4 +1,11 @@
 # Use a base image with JDK and Maven pre-installed for building the Spring Boot application
+FROM ubuntu:latest AS build
+
+RUN apt-get update
+RUN apt-get install openjdk-17-jdk -y
+COPY . .
+
+RUN ./gradlew bootJar --no-daemon
 FROM maven:3.8.4-openjdk-17-slim AS builder
 
 # Set the working directory inside the container
