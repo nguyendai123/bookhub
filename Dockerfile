@@ -1,32 +1,9 @@
 # Use a base image with JDK and Maven pre-installed for building the Spring Boot application
-FROM ubuntu:latest AS build
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
-COPY . .
+FROM eclipse-temurin:17-jdk-alpine
+VOLUME /tmp
+COPY target/*.jar app.jar
 
-RUN ./gradlew bootJar --no-daemon
-FROM maven:3.8.4-openjdk-17-slim AS builder
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the Maven project files
-COPY pom.xml .
-COPY src ./src
-
-# Build the Spring Boot application
-RUN mvn clean package -DskipTests
-
-
-# Use a base image for the final application runtime
-FROM openjdk:17.0.1-jdk-slim
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the Spring Boot JAR file from the builder stage
-COPY --from=builder /app/target/bookhup-0.0.1-SNAPSHOT.jar app.jar
 
 # Install MariaDB client
 RUN apt-get update && apt-get install -y mariadb-client
@@ -42,4 +19,4 @@ ENV DB_PASSWORD 1232001
 EXPOSE 8080
 
 # Set the command to run the Spring Boot application
-CMD ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","/app.jar"]
