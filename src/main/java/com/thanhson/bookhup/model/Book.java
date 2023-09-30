@@ -38,7 +38,8 @@ public class Book {
 
     @Column(name = "Page")
     private int page;
-
+    @Column(name = "Rate")
+    private double rate;
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
